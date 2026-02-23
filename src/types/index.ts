@@ -1,3 +1,3 @@
-interface DashboardProps {
-text: string
+export interface DashboardProps {
+    text: string
 }

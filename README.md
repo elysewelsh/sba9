@@ -13,7 +13,7 @@ A dashboard application to manage tasks
 * **Create Tasks:** User can create new tasks.
 * **View Tasks:** Displays a list of all relevant tasks, including descriptions, priorities, and deadlines.
 * **Summarize Tasks:** Displays a summary of all tasks, aggregated by priorities, status, and deadlines.
-* **Filter Tasks:** Sort the tasks by current status, priority level, or a combination of both.
+* **Filter Tasks:** Filter the tasks by current status, priority level, or a combination of both.
 * **Update Status:** Change the current phase of any task (e.g., from pending to completed).
 * **Delete Items:** Permanently remove items from the dashboard.
 
