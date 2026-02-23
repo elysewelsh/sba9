@@ -1,0 +1,3 @@
+interface DashboardProps {
+text: string
+}
