@@ -13,7 +13,7 @@
 // Show validation feedback
 
 import { useState } from 'react';
-import type {Task} from '../../types'
+import type {Task, TaskFormProps} from '../../types'
 
 // interface Props {}
 
@@ -26,7 +26,7 @@ import type {Task} from '../../types'
 //   dueDate: string;
 // }
 
-export function TaskForm() {
+export function TaskForm({onSubmit}: TaskFormProps) {
   const [newTask, setNewTask] = useState<Task>({
     id: '',
     title: '',
@@ -37,17 +37,24 @@ export function TaskForm() {
     }); // State holds the input value
 
    
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target; // Destructure name and value
+  const handleChange = (e:any) => {
+    const { name, value } = e.target; // Destructure name and value
     setNewTask(prevNewTask => ({
         ...prevNewTask,
         [name]: value
     }));
     }; 
 
+    const formSubmit = (e: any) => {
+        e.preventDefault();
+        //validation
+        //try catch
+        alert(`Adding New Task ID: ${newTask.id}`);
+        onSubmit(newTask);
+    };
 
   return (
-    <form onSubmit={handleAddTask}>
+    <form onSubmit={formSubmit}>
         <label htmlFor="id">Task ID:</label>
         <input
             type="text"

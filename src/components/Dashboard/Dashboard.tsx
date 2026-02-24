@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import type { DashboardProps, Task }from "../../types"
 import { TaskForm } from "../TaskForm/TaskForm"
 
@@ -21,20 +22,21 @@ export function Dashboard ( {text}: DashboardProps) {
 
 // Implement responsive layout
 // Compose all components into a cohesive dashboard
-    const [tasks, setTasks] = useState(ogTasks);
+    const [tasks, setTasks] = useState<Task[]>(ogTasks);
     const [filterState, setFilterState] = useState({
         status: "",
         priority: ""
     });
 
-    const handleAddTask = (newTask: Task) => {
+const handleSubmit = (newTask: Task) => {
+        //validation util
         setTasks(prevTasks => [...prevTasks, newTask]);
     }
 
     return (
         <>
         <h1>{text}</h1>
-        <TaskForm onSubmit={handleAddTask}/>
+        <TaskForm onSubmit={handleSubmit}/>
         </>
     )
 }

@@ -37,3 +37,7 @@ export interface IFilterProp {
     status?: string,
     priority?: string
 }
+
+export interface TaskFormProps {
+    onSubmit: (newTask: Task) => void;
+}
