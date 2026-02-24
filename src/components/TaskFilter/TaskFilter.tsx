@@ -40,7 +40,7 @@ export function TaskFilter ({onFilterChange}: TaskFilterProps) {
 
             <label className="font-bold" htmlFor="search"> Task Search:</label>
             <input type="search" className="border-1 bg-gray-800 rounded-sm cursor-pointer transition-all duration-[250ms] ease-in-out hover:border-[#3182ce] focus:outline-none" id="search" 
-            onFocus={(e) => {
+            onBlur={(e) => {
                 let searchValue: string = e.target.value;
                 onFilterChange({search: searchValue});
             }}></input>

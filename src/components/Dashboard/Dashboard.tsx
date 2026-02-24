@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { DashboardProps, Task, TaskStatus }from "../../types"
 import { TaskForm } from "../TaskForm/TaskForm"
 import { TaskFilter } from "../TaskFilter/TaskFilter"
+import {TaskList } from "../TaskList/Tasklist"
 
 export function Dashboard ( {text}: DashboardProps) {
 
@@ -82,7 +83,8 @@ const ogTasks: Task[] = [
     const [tasks, setTasks] = useState<Task[]>(ogTasks);
     const [filterState, setFilterState] = useState({
         status: "",
-        priority: ""
+        priority: "",
+        search: "",
     });
 
     const handleSubmit = (newTask: Task) => {
@@ -90,15 +92,32 @@ const ogTasks: Task[] = [
         setTasks(prevTasks => [...prevTasks, newTask]);
     }
 
-    function handleFilterChange (filters: {status?: TaskStatus, priority?: 'low' | 'medium' | 'high'}) {  
+    function handleFilterChange (filters: {status?: TaskStatus, priority?: 'low' | 'medium' | 'high', search?: string}) {  
         setFilterState((prevFilterState) => {return { ...prevFilterState, ...filters };});
     };
+
+    function handleStatusChange (taskId:string, newStatus:TaskStatus) {
+        setTasks(prevTasks => prevTasks.map(task => task.id === taskId ? {...task, status: newStatus } : task));
+    };
+
+    function handleDelete (taskId:string) {
+        setTasks((prevTask) => prevTask.filter(tasks => tasks.id !== taskId));
+    }
+
+    const filteredTasks = tasks.filter(task => {
+    const includesStatus = filterState.status === "" || task.status.includes(filterState.status);
+    const includesPriority = filterState.priority === "" || task.priority.includes(filterState.priority);
+    const includesSearch = filterState.search === "" || (task.title.toLowerCase().includes(filterState.search.toLowerCase()) || task.description.toLowerCase().includes(filterState.search.toLowerCase()))
+    return includesStatus && includesPriority && includesSearch;
+    });
 
     return (
         <>
         <h1>{text}</h1>
         <TaskForm onSubmit={handleSubmit}/>
         <TaskFilter onFilterChange={handleFilterChange}/>
+        <p>Search Results for "{filterState.search}":</p>
+        <TaskList tasks={filteredTasks} onStatusChange={handleStatusChange} onDelete={handleDelete}/>
         </>
     )
 }
