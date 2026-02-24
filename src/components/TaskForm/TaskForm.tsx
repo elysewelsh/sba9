@@ -51,6 +51,14 @@ export function TaskForm({onSubmit}: TaskFormProps) {
         //try catch
         alert(`Adding New Task ID: ${newTask.id}`);
         onSubmit(newTask);
+        setNewTask({
+            id: '',
+            title: '',
+            description: '',
+            status: 'pending',
+            priority: '',
+            dueDate: ''
+        });
     };
 
   return (
@@ -114,6 +122,7 @@ export function TaskForm({onSubmit}: TaskFormProps) {
         </select>
         <label className="font-bold" htmlFor="dueDate">Due Date:</label>
         <input type="date" name="dueDate" value={newTask.dueDate} onChange={handleChange}/>
+        <button type="submit">Add Task</button>
     </form>
   );
 };
