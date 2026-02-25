@@ -3,6 +3,7 @@ import type { DashboardProps, Task, TaskPriority, TaskStatus }from "../../types"
 import { TaskForm } from "../TaskForm/TaskForm"
 import { TaskFilter } from "../TaskFilter/TaskFilter"
 import {TaskList } from "../TaskList/Tasklist"
+import { formGood } from "../../utils/taskUtils"
 
 export function Dashboard ( {text}: DashboardProps) {
 
@@ -167,16 +168,32 @@ export function Dashboard ( {text}: DashboardProps) {
         search: "",
     });
 
+    // const [errors, setErrors] = useState(<></>);
+
     // let initializeForm: Task = editTask;
 
     function handleFilterChange (filters: {status?: TaskStatus, priority?: TaskPriority, search?: string}) {  
         setFilterState((prevFilterState) => {return { ...prevFilterState, ...filters };});
     };
 
+    //newest to oldest
+    const sortedNewTasks = [...tasks].sort((a, b) => new Date(b.dueDate).getTime() - new Date(a.dueDate).getTime());
+
+    //oldest to newest
+    const sortedOldTasks = [...tasks].sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+
     const handleSubmit = (newTask: Task) => {
         const updatedTasks = [...tasks, newTask];
         setTasks(updatedTasks);
         localStore(updatedTasks);
+        setEditTask({
+                id: '',
+                title: '',
+                description: '',
+                status: 'pending',
+                priority: '-',
+                dueDate: ''
+                });
     };
 
     function handleStatusChange (taskId:string, newStatus:TaskStatus) {
@@ -186,20 +203,27 @@ export function Dashboard ( {text}: DashboardProps) {
     };
 
     function handleFullEdit (newTask : Task) {
-        const updatedTasks = tasks.map(task => task.id === editId ? newTask : task);
-        setTasks(updatedTasks);
-        localStore(updatedTasks);
-        setEditId(null);
-        setEditTask(
-            {
-            id: '',
-            title: '',
-            description: '',
-            status: 'pending',
-            priority: '-',
-            dueDate: ''
-            }
-        );
+        let validateForm = formGood(newTask);
+        if (validateForm[0] === "Submitted") {
+            const updatedTasks = tasks.map(task => task.id === editId ? newTask : task);
+            setTasks(updatedTasks);
+            localStore(updatedTasks);
+            setEditId(null);
+            setEditTask(
+                {
+                id: '',
+                title: '',
+                description: '',
+                status: 'pending',
+                priority: '-',
+                dueDate: ''
+                }
+            );
+        } else {
+        let errorDisplay: any = Object.values(validateForm).join(' ');
+        alert(`${errorDisplay}`);
+        return errorDisplay;
+        }
     };
 
 
@@ -229,7 +253,7 @@ export function Dashboard ( {text}: DashboardProps) {
         return includesStatus && includesPriority && includesSearch;
     });
 
-
+// postDate.innerText = `post last edited: ${(new Date(array[i].date)).toLocaleDateString()}`;
 
     return (
         <>

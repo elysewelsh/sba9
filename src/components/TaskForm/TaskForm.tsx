@@ -14,6 +14,7 @@
 
 import { useState } from 'react';
 import type {Task, TaskFormProps} from '../../types'
+import { formGood } from '../../utils/taskUtils';
 
 // interface Props {}
 
@@ -49,24 +50,28 @@ export function TaskForm({taskToEdit, onSubmit, onEditSubmit}: TaskFormProps ) {
 
     const formSubmit = (e: any) => {
         e.preventDefault();
-        //validation
-        //try catch
-        alert(`Adding New Task ID: ${newTask.id}`);
-        onSubmit(newTask);
-        setNewTask({
-            id: '',
-            title: '',
-            description: '',
-            status: 'pending',
-            priority: '-',
-            dueDate: ''
-        });
+        const formError = formGood(newTask);
+        if (formError[0] === "Submitted") {
+            onSubmit(newTask);
+            setNewTask({
+                id: '',
+                title: '',
+                description: '',
+                status: 'pending',
+                priority: '-',
+                dueDate: ''
+            });
+        } else {
+            alert(formError.join(' '));
+        }
     };
 
     function taskEdit (e: any) {
         e.preventDefault();
-        alert(`Editing Task ID: ${newTask.id}`);
-        onEditSubmit(newTask);
+        const formError = formGood(newTask);
+        console.log(formError);
+        if (formError[0] === "Submitted" ) {
+            onEditSubmit(newTask);
             setNewTask({
             id: '',
             title: '',
@@ -75,6 +80,9 @@ export function TaskForm({taskToEdit, onSubmit, onEditSubmit}: TaskFormProps ) {
             priority: '-',
             dueDate: ''
         });
+    } else {
+        alert(Object.values(formError).join(' '));
+    }
     }
 
   return (
