@@ -24,12 +24,12 @@ import type { TaskListProps } from '../../types'
 import TaskItem from './TaskItem'
 
 
-export function TaskList ( {tasks, onStatusChange, onDelete}: TaskListProps) {
+export function TaskList ( {tasks, onStatusChange, onEdit, onDelete}: TaskListProps) {
 // iterates over tasks array and calls TaskItem component to display individual task with unique and stable key    
     const list = tasks.map((task) => {
             return (
                 <div key={task.id}>
-                <TaskItem  task={task} onStatusChange={onStatusChange} onDelete={onDelete}/>
+                <TaskItem  task={task} onStatusChange={onStatusChange} onEdit={onEdit} onDelete={onDelete}/>
                 </div>
             );
         });

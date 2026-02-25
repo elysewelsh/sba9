@@ -1,6 +1,6 @@
 import type { TaskItemProps, TaskStatus } from "../../types";
 
-function TaskItem({task, onStatusChange, onDelete}: TaskItemProps) {
+function TaskItem({task, onStatusChange, onEdit, onDelete}: TaskItemProps) {
 const priorityStyles: any = {
     low: "text-green-500",
     medium: "text-amber-500",
@@ -22,12 +22,16 @@ const priorityStyles: any = {
                     <div className="flex flex-row gap-3" id="yellow">
                         <p>Status: </p>
                         <select className="border-1 bg-gray-800 rounded-sm cursor-pointer transition-all duration-[250ms] ease-in-out hover:border-[#3182ce] focus:outline-none" value={task.status} onChange={(e) => onStatusChange(task.id, e.target.value as TaskStatus)}>
+                            <option value="daily">Daily Recurring</option>
                             <option value="completed">Completed</option>
                             <option value="pending">Pending</option>
                             <option value="in-progress">In Progress</option>
                         </select>
+                    <div>
+                        <button className="rounded border-2 border-transparent px-8 py-4 text-lg font-semibold bg-gray-800 cursor-pointer transition-all duration-[250ms] ease-in-out hover:border-[#3182ce] focus:outline-none focus:ring-2 focus:ring-[#3182ce]" onClick={() => onEdit(task.id)}>Edit</button>
                     </div>
-                    <button className="rounded border-2 border-transparent px-8 py-4 text-lg font-semibold bg-gray-800 cursor-pointer transition-all duration-[250ms] ease-in-out hover:border-[#3182ce] focus:outline-none focus:ring-2 focus:ring-[#3182ce]" onClick={() => onDelete(task.id)}>Delete</button>
+                    </div>
+                        <button className="rounded border-2 border-transparent px-8 py-4 text-lg font-semibold bg-gray-800 cursor-pointer transition-all duration-[250ms] ease-in-out hover:border-[#3182ce] focus:outline-none focus:ring-2 focus:ring-[#3182ce]" onClick={() => onDelete(task.id, task.title)}>Delete</button>
                     </div>
             </div>
         </div>

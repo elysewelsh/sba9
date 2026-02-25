@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import type { DashboardProps, Task, TaskStatus }from "../../types"
+import type { DashboardProps, Task, TaskPriority, TaskStatus }from "../../types"
 import { TaskForm } from "../TaskForm/TaskForm"
 import { TaskFilter } from "../TaskFilter/TaskFilter"
 import {TaskList } from "../TaskList/Tasklist"
@@ -149,13 +149,27 @@ export function Dashboard ( {text}: DashboardProps) {
         return localStorageExists ? JSON.parse(localStorageExists) : ogTasks;
     });
 
+    const [editId, setEditId] = useState<string | null>(null);
+    const [editTask, setEditTask] = useState<Task>(
+        {
+        id: '',
+        title: '',
+        description: '',
+        status: 'pending',
+        priority: '-',
+        dueDate: ''
+        }
+    );
+
     const [filterState, setFilterState] = useState({
         status: "",
         priority: "",
         search: "",
     });
 
-    function handleFilterChange (filters: {status?: TaskStatus, priority?: 'low' | 'medium' | 'high', search?: string}) {  
+    // let initializeForm: Task = editTask;
+
+    function handleFilterChange (filters: {status?: TaskStatus, priority?: TaskPriority, search?: string}) {  
         setFilterState((prevFilterState) => {return { ...prevFilterState, ...filters };});
     };
 
@@ -171,8 +185,35 @@ export function Dashboard ( {text}: DashboardProps) {
         localStore(updatedTasks);
     };
 
-    function handleDelete(taskId: string) {
-        const updatedTasks = tasks.filter(task => task.id !== taskId);
+    function handleFullEdit (newTask : Task) {
+        const updatedTasks = tasks.map(task => task.id === editId ? newTask : task);
+        setTasks(updatedTasks);
+        localStore(updatedTasks);
+        setEditId(null);
+        setEditTask(
+            {
+            id: '',
+            title: '',
+            description: '',
+            status: 'pending',
+            priority: '-',
+            dueDate: ''
+            }
+        );
+    };
+
+
+    function handleEditRequest (taskId: string) {
+        const editTask = tasks.find(task => task.id === taskId);
+        if (editTask) {
+            setEditId(editTask.id);
+            setEditTask(editTask);
+            // initializeForm = editTask;
+        };
+    };
+
+    function handleDelete(taskId: string, taskTitle: string) {
+        const updatedTasks = tasks.filter(task => task.id !== taskId || task.title !== taskTitle);
         setTasks(updatedTasks);
         localStore(updatedTasks);
     };
@@ -188,13 +229,15 @@ export function Dashboard ( {text}: DashboardProps) {
         return includesStatus && includesPriority && includesSearch;
     });
 
+
+
     return (
         <>
         <h1>{text}</h1>
-        <TaskForm onSubmit={handleSubmit}/>
+        <TaskForm key={editId || "new"} taskToEdit={editTask} onSubmit={handleSubmit} onEditSubmit={handleFullEdit}/>
         <TaskFilter onFilterChange={handleFilterChange}/>
         <p>Search Results for "{filterState.search}":</p>
-        <TaskList tasks={filteredTasks} onStatusChange={handleStatusChange} onDelete={handleDelete}/>
+        <TaskList tasks={filteredTasks} onStatusChange={handleStatusChange} onEdit={handleEditRequest} onDelete={handleDelete}/>
         </>
     )
 }
