@@ -25,90 +25,167 @@ export function Dashboard ( {text}: DashboardProps) {
 // Implement responsive layout
 // Compose all components into a cohesive dashboard
 
-const ogTasks: Task[] = [
-    {
-        id: "AC",
-        title: "See Alice Cooper Live",
-        description: `"Does this guy know how to party or what?"`,
-        status: 'pending',
-        priority: 'low',
-        dueDate: "November",
-    }
-,
-    {
-        id: "GR",
-        title: "Refuse Gun Rack",
-        description: `"I don't even own ah gun, let alone many guns that would necessitate an entire rack."`,
-        status: "completed",
-        priority: 'low',
-        dueDate: "Yesterday",
-    }
-,
-    {
-        id: "GA",
-        title: "Play Epic Drum Solo",
-        description: `"Thanks. I like to play."`,
-        status: "completed",
-        priority: 'high',
-        dueDate: "Last Month",
-    }
-,
-    {
-        id: "DE",
-        title: "Visit Delaware",
-        description: `"Hi. I'm in...Delaware"`,
-        status: "in-progress",
-        priority: 'low',
-        dueDate: "2027",
-    }
-,
-    {
-        id: "WC",
-        title: "Buy Excalibur",
-        description: `"No Stairway!"`,
-        status: "in-progress",
-        priority:'high',
-        dueDate: "ASAP",
-    }
-,
-    {
-        id: "BR",
-        title: "Road Trip",
-        description: `"If you're gonna spew, spew into this."`,
-        status: "pending",
-        priority: 'medium',
-        dueDate:"Tonight",
-    }
-]
-    const [tasks, setTasks] = useState<Task[]>(ogTasks);
+    const ogTasks: Task[] = [
+        {
+            id: "01",
+            title: "localStorage",
+            description: `Save task array to localStorage`,
+            status: 'pending',
+            priority: 'high',
+            dueDate: "2026-02-25",
+        }
+    ,
+        {
+            id: "02",
+            title: "Task Statistics",
+            description: `Make status bar or other information radiators on dashboard`,
+            status: "pending",
+            priority: 'high',
+            dueDate: "2026-02-25",
+        }
+    ,
+        {
+            id: "03",
+            title: "Make Tasks Editable",
+            description: `Move tasks to form like blog`,
+            status: "pending",
+            priority: 'high',
+            dueDate: "2026-02-25",
+        }
+    ,
+        {
+            id: "04",
+            title: "Sort",
+            description: `Implement task sorting`,
+            status: "pending",
+            priority: 'high',
+            dueDate: "2026-02-25",
+        }
+    ,
+        {
+            id: "05",
+            title: "Form Validation",
+            description: `Add form validation in utils`,
+            status: "pending",
+            priority:'medium',
+            dueDate: "2026-02-25",
+        }
+    ,
+        {
+            id: "06",
+            title: "Format Dates",
+            description: `Add date formatting to utils and change dueDate type to date`,
+            status: "pending",
+            priority: 'medium',
+            dueDate:"2026-02-25",
+        }
+    ,
+        {
+            id: "07",
+            title: "Styling",
+            description: `Style and make responsive`,
+            status: "pending",
+            priority: 'low',
+            dueDate:"2026-02-25",
+        }
+    ,
+        {
+            id: "08",
+            title: "Move Functions to Utils",
+            description: `Move functions (e.g., filtering) to utils file`,
+            status: "pending",
+            priority: 'low',
+            dueDate:"2026-02-25",
+        }
+    ,
+        {
+            id: "09",
+            title: "Move Data to App?",
+            description: `Move this array of tasks to highest level? States too?`,
+            status: "pending",
+            priority: 'low',
+            dueDate:"2026-02-25",
+        }
+    ,
+        {
+            id: "10",
+            title: "Show Validation Feedback",
+            description: `Add error spans, etc. to inputs, submit, and search`,
+            status: "pending",
+            priority: 'low',
+            dueDate:"2026-02-25",
+        }
+    ,
+        {
+            id: "11",
+            title: "Show Active Filter Indicators",
+            description: `Add additional text to Dashboard to show current filter states`,
+            status: "pending",
+            priority: 'low',
+            dueDate:"2026-02-25",
+        }
+    ,
+        {
+            id: "12",
+            title: "Test",
+            description: `Form Validators, Filtering, Sorting, Responsiveness, Component Interactions`,
+            status: "pending",
+            priority: 'low',
+            dueDate:"2026-02-25",
+        }
+    ,
+        {
+            id: "13",
+            title: "Documentation",
+            description: `Comment code, README with setup instructions and Reflections, document component props and usage`,
+            status: "pending",
+            priority: 'low',
+            dueDate:"2026-02-25",
+        }
+    ]
+
+    const [tasks, setTasks] = useState<Task[]>(() => {
+        const localStorageExists = localStorage.getItem('tasks');
+        return localStorageExists ? JSON.parse(localStorageExists) : ogTasks;
+    });
+
     const [filterState, setFilterState] = useState({
         status: "",
         priority: "",
         search: "",
     });
 
-    const handleSubmit = (newTask: Task) => {
-        //validation util
-        setTasks(prevTasks => [...prevTasks, newTask]);
-    }
-
     function handleFilterChange (filters: {status?: TaskStatus, priority?: 'low' | 'medium' | 'high', search?: string}) {  
         setFilterState((prevFilterState) => {return { ...prevFilterState, ...filters };});
     };
 
-    function handleStatusChange (taskId:string, newStatus:TaskStatus) {
-        setTasks(prevTasks => prevTasks.map(task => task.id === taskId ? {...task, status: newStatus } : task));
+    const handleSubmit = (newTask: Task) => {
+        const updatedTasks = [...tasks, newTask];
+        setTasks(updatedTasks);
+        localStore(updatedTasks);
     };
 
-    function handleDelete (taskId:string) {
-        setTasks((prevTask) => prevTask.filter(tasks => tasks.id !== taskId));
-    }
+    function handleStatusChange (taskId:string, newStatus:TaskStatus) {
+        const updatedTasks = tasks.map(task => task.id === taskId ? {...task, status: newStatus } : task );
+        setTasks(updatedTasks);
+        localStore(updatedTasks);
+    };
+
+    function handleDelete(taskId: string) {
+        const updatedTasks = tasks.filter(task => task.id !== taskId);
+        setTasks(updatedTasks);
+        localStore(updatedTasks);
+    };
+
+    function localStore (tasks: Task[]) {
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+    };
 
     const filteredTasks = tasks.filter(task => {
-    const includesStatus = filterState.status === "" || task.status.includes(filterState.status);
-    const includesPriority = filterState.priority === "" || task.priority.includes(filterState.priority);
-    const includesSearch = filterState.search === "" || (task.title.toLowerCase().includes(filterState.search.toLowerCase()) || task.description.toLowerCase().includes(filterState.search.toLowerCase()))
-    return includesStatus && includesPriority && includesSearch;
+        const includesStatus = filterState.status === "" || task.status.includes(filterState.status);
+        const includesPriority = filterState.priority === "" || task.priority.includes(filterState.priority);
+        const includesSearch = filterState.search === "" || (task.title.toLowerCase().includes(filterState.search.toLowerCase()) || task.description.toLowerCase().includes(filterState.search.toLowerCase()))
+        return includesStatus && includesPriority && includesSearch;
     });
 
     return (
