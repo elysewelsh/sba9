@@ -6,9 +6,9 @@ function App() {
 //   const [count, setCount] = useState(0)
 
   return (
-    <>
-        <Dashboard text={"test"}/>
-    </>
+    <div className="w-[100vw]">
+        <Dashboard text={"TASKS"}/>
+    </div>
   )
 }
 

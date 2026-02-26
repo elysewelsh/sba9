@@ -3,7 +3,7 @@ import type { DashboardProps, Task, TaskPriority, TaskStatus }from "../../types"
 import { TaskForm } from "../TaskForm/TaskForm"
 import { TaskFilter } from "../TaskFilter/TaskFilter"
 import {TaskList } from "../TaskList/Tasklist"
-import { formGood, localStore } from "../../utils/taskUtils"
+import { formGood, localStore, progressBar, pendingCount, inProgressCount, completedCount } from "../../utils/taskUtils"
 
 export function Dashboard ( {text}: DashboardProps) {
 
@@ -168,7 +168,10 @@ export function Dashboard ( {text}: DashboardProps) {
     );
 
 // keeps track of array sorting status
-    const [sortOrder, setSortOrder] = useState<Task[]>(tasks);
+    const [sortOrder, setSortOrder] = useState<Task[]>(() => {
+        const localStorageExists = localStorage.getItem('tasks');
+        return localStorageExists ? JSON.parse(localStorageExists) : ogTasks;
+    });
 
 // task array newest to oldest
     let sortedNewTasks = [...tasks].sort((a, b) => new Date(b.dueDate).getTime() - new Date(a.dueDate).getTime());
@@ -200,6 +203,7 @@ export function Dashboard ( {text}: DashboardProps) {
     const handleSubmit = (newTask: Task) => {
         const updatedTasks = [...tasks, newTask];
         setTasks(updatedTasks);
+        setSortOrder(updatedTasks);
         localStore(updatedTasks);
         setEditTask({
                 id: '',
@@ -215,6 +219,7 @@ export function Dashboard ( {text}: DashboardProps) {
     function handleStatusChange (taskId:string, newStatus:TaskStatus) {
         const updatedTasks = tasks.map(task => task.id === taskId ? {...task, status: newStatus } : task );
         setTasks(updatedTasks);
+        setSortOrder(updatedTasks);
         localStore(updatedTasks);
     };
 
@@ -224,6 +229,7 @@ export function Dashboard ( {text}: DashboardProps) {
         if (validateForm[0] === "Submitted") {
             const updatedTasks = tasks.map(task => task.id === editId ? newTask : task);
             setTasks(updatedTasks);
+            setSortOrder(updatedTasks);
             localStore(updatedTasks);
             setEditId(null);
             setEditTask(
@@ -247,39 +253,82 @@ export function Dashboard ( {text}: DashboardProps) {
     function handleEditRequest (taskId: string) {
         const editTask = tasks.find(task => task.id === taskId);
         if (editTask) {
-            setEditId(editTask.id);
+            setEditId(taskId);
             setEditTask(editTask);
+            window.scrollTo(0, 0);
+        }
         };
-    };
 
 // when "delete" button is clicked from within individual task
     function handleDelete(taskId: string, taskTitle: string) {
         const updatedTasks = tasks.filter(task => task.id !== taskId || task.title !== taskTitle);
         setTasks(updatedTasks);
+        setSortOrder(updatedTasks);
         localStore(updatedTasks);
     };
 
+    const totalTasks = progressBar(tasks);
+    const pendingTasks = pendingCount(tasks);
+    const inProgressTasks = inProgressCount(tasks);
+    const completedTasks = completedCount(tasks);
+
+    const pendingBar = (pendingTasks/totalTasks)*100
+    const inProgressBar = (inProgressTasks/totalTasks)*100
+    const completedBar = (completedTasks/totalTasks)*100
+
+    // const totalTasks = 1;
+    // const pendingTasks = 2;
+    // const inProgressTasks = 3;
+    // const completedTasks = 4;
 
 return (
-        <>
-        <header className="flex justify-between bg-gray-800 p-4" ></header>
-        <h1 className="text-2xl font-white text-center font-bold">{text}</h1>
-        <TaskForm key={editId || "new"} taskToEdit={editTask} onSubmit={handleSubmit} onEditSubmit={handleFullEdit}/>
-        <button
-            onClick={() => setSortOrder(sortedNewTasks)}
-            className="ml-4 text-gray-500 hover:text-gray-700"
-        >
-            Sort New to Old
-        </button>
-        <button
-            onClick={() => setSortOrder(sortedOldTasks)}
-            className="ml-4 text-gray-500 hover:text-gray-700"
-        >
-            Sort Old to New
-        </button>
-        <TaskFilter onFilterChange={handleFilterChange}/>
-        <p>Search Results for "{filterState.search}":</p>
-        <TaskList tasks={filteredTasks} onStatusChange={handleStatusChange} onEdit={handleEditRequest} onDelete={handleDelete}/>
+    <>
+    <header className="flex justify-center bg-gray-800 p-4 text-5xl font-white text-center font-bold" >
+        {text}
+    </header>
+    <main className="flex">
+        <div className="flex flex-col">
+            <TaskForm key={editId || "new"} taskToEdit={editTask} onSubmit={handleSubmit} onEditSubmit={handleFullEdit}/>
+            <div className="m-4 p-4 gap-3 border-1 rounded-xl">
+                <div className="flex flex-row w-full border-1">
+                    
+                    <div style={{ width: `${pendingBar}%` }} className="bg-gray-400 p-2">
+                        Pending
+                    </div>
+                    <div style={{ width: `${inProgressBar}%` }} className="bg-gray-500 p-2">
+                        In-Progress
+                    </div>
+                    <div style={{ width: `${completedBar}%` }} className="bg-gray-700 p-2">
+                        Completed
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div className="flex flex-row justify-between m-4 p-4 gap-3 border-1 rounded-xl">
+                <div className="flex flex-row gap-3 p-4 ">
+                    <button
+                        onClick={() => setSortOrder(sortedNewTasks)}
+                        className="border-1 bg-gray-800 rounded-sm cursor-pointer transition-all duration-[250ms] ease-in-out hover:border-[#3182ce] focus:outline-none"
+                    >
+                        Sort New to Old
+                    </button>
+                    <button
+                        onClick={() => setSortOrder(sortedOldTasks)}
+                        className="border-1 bg-gray-800 rounded-sm cursor-pointer transition-all duration-[250ms] ease-in-out hover:border-[#3182ce] focus:outline-none"
+                    >
+                        Sort Old to New
+                    </button>
+                </div>
+                <div>
+                    <TaskFilter onFilterChange={handleFilterChange}/>
+                    <p>Search Results for "{filterState.search}":</p>
+                </div>
+            </div>
+            <TaskList tasks={filteredTasks} onStatusChange={handleStatusChange} onEdit={handleEditRequest} onDelete={handleDelete}/>
+        </div>
+    </main>
+        
         </>
     )
 }

@@ -65,7 +65,7 @@ function taskEdit (e: any) {
 
   return (
     <form className="flex flex-col justify-start max-w-[30vw] m-4 p-4 gap-3 border-1 rounded-xl" onSubmit={taskToEdit.id !== '' ? taskEdit : formSubmit}>
-        <label htmlFor="id">Task ID:</label>
+        <label className="font-bold" htmlFor="id">Task ID:</label>
         <input className="border-1 bg-gray-800 rounded-sm cursor-pointer transition-all duration-[250ms] ease-in-out hover:border-[#3182ce] focus:outline-none"
             type="text"
             name="id"
@@ -88,7 +88,7 @@ function taskEdit (e: any) {
             value={newTask.description}
             onChange={handleChange}
         />
-<div className="flex flex-row m-5">
+<div className="flex flex-row justify-between mr-5 gap-2 ">
         <label className="font-bold" htmlFor="status">Status:</label>
         <select className="border-1 bg-gray-800 rounded-sm cursor-pointer transition-all duration-[250ms] ease-in-out hover:border-[#3182ce] focus:outline-none" 
             name="status" 

@@ -21,7 +21,7 @@ const priorityStyles: any = {
                 <div className="flex flex-col justify-between" id="purple">
                     <div className="flex flex-row gap-3" id="yellow">
                         <p>Status: </p>
-                        <select className="border-1 bg-gray-800 rounded-sm cursor-pointer transition-all duration-[250ms] ease-in-out hover:border-[#3182ce] focus:outline-none" value={task.status} onChange={(e) => onStatusChange(task.id, e.target.value as TaskStatus)}>
+                        <select className="border-1 bg-gray-800 rounded-sm cursor-pointer transition-all duration-[250ms] ease-in-out hover:border-[#3182ce] focus:outline-none" value={task.status} onChange={(e) => onStatusChange(task.id, (e.target.value as TaskStatus))}>
                             <option value="daily">Daily Recurring</option>
                             <option value="completed">Completed</option>
                             <option value="pending">Pending</option>
