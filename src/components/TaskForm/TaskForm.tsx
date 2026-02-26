@@ -64,9 +64,9 @@ function taskEdit (e: any) {
 }
 
   return (
-    <form onSubmit={taskToEdit.id !== '' ? taskEdit : formSubmit}>
+    <form className="flex flex-col justify-start max-w-[30vw] m-4 p-4 gap-3 border-1 rounded-xl" onSubmit={taskToEdit.id !== '' ? taskEdit : formSubmit}>
         <label htmlFor="id">Task ID:</label>
-        <input
+        <input className="border-1 bg-gray-800 rounded-sm cursor-pointer transition-all duration-[250ms] ease-in-out hover:border-[#3182ce] focus:outline-none"
             type="text"
             name="id"
             value={newTask.id} // Input value is controlled by state
@@ -74,7 +74,7 @@ function taskEdit (e: any) {
         />
 
         <label className="font-bold" htmlFor="title">Task Title:</label>
-        <input
+        <input className="border-1 bg-gray-800 rounded-sm cursor-pointer transition-all duration-[250ms] ease-in-out hover:border-[#3182ce] focus:outline-none"
             type="text"
             name="title"
             value={newTask.title} // Input value is controlled by state
@@ -82,13 +82,13 @@ function taskEdit (e: any) {
         />
 
         <label className="font-bold" htmlFor="description">Task Description:</label>
-        <input
+        <input className="border-1 bg-gray-800 rounded-sm cursor-pointer transition-all duration-[250ms] ease-in-out hover:border-[#3182ce] focus:outline-none"
             type="text"
             name="description"
             value={newTask.description}
             onChange={handleChange}
         />
-
+<div className="flex flex-row m-5">
         <label className="font-bold" htmlFor="status">Status:</label>
         <select className="border-1 bg-gray-800 rounded-sm cursor-pointer transition-all duration-[250ms] ease-in-out hover:border-[#3182ce] focus:outline-none" 
             name="status" 
@@ -128,6 +128,7 @@ function taskEdit (e: any) {
         </select>
         <label className="font-bold" htmlFor="dueDate">Due Date:</label>
         <input type="date" name="dueDate" value={newTask.dueDate} onChange={handleChange}/>
+        </div>
         <button type="submit">{taskToEdit.id !== '' ? "Save Changes" : "Add Task"}</button>
     </form>
   );

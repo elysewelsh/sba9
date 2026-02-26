@@ -262,7 +262,8 @@ export function Dashboard ( {text}: DashboardProps) {
 
 return (
         <>
-        <h1>{text}</h1>
+        <header className="flex justify-between bg-gray-800 p-4" ></header>
+        <h1 className="text-2xl font-white text-center font-bold">{text}</h1>
         <TaskForm key={editId || "new"} taskToEdit={editTask} onSubmit={handleSubmit} onEditSubmit={handleFullEdit}/>
         <button
             onClick={() => setSortOrder(sortedNewTasks)}
