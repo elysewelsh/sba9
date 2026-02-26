@@ -1,35 +1,11 @@
-// Create a controlled form for adding/editing tasks
-
-
-
-// Implement form validation
-
-
-
-// Handle form submission
-
-
-
-// Show validation feedback
-
 import { useState } from 'react';
 import type {Task, TaskFormProps} from '../../types'
 import { formGood } from '../../utils/taskUtils';
 
-// interface Props {}
-
-// export interface Task {
-//   id: string;
-//   title: string;
-//   description: string;
-//   status: TaskStatus;
-//   priority: TaskPriority;
-//   dueDate: string;
-// }
-
 export function TaskForm({taskToEdit, onSubmit, onEditSubmit}: TaskFormProps ) {
 
-  const [newTask, setNewTask] = useState<Task>(taskToEdit ? taskToEdit :
+// status of input, initialized to empty
+const [newTask, setNewTask] = useState<Task>(taskToEdit ? taskToEdit :
     {
     id: '',
     title: '',
@@ -39,8 +15,8 @@ export function TaskForm({taskToEdit, onSubmit, onEditSubmit}: TaskFormProps ) {
     dueDate: ''
     }); // State holds the input value
 
-   
-  const handleChange = (e:any) => {
+// updates properties in new task input by field
+const handleChange = (e:any) => {
     const { name, value } = e.target; // Destructure name and value
     setNewTask(prevNewTask => ({
         ...prevNewTask,
@@ -48,31 +24,14 @@ export function TaskForm({taskToEdit, onSubmit, onEditSubmit}: TaskFormProps ) {
     }));
     }; 
 
-    const formSubmit = (e: any) => {
-        e.preventDefault();
-        const formError = formGood(newTask);
-        if (formError[0] === "Submitted") {
-            onSubmit(newTask);
-            setNewTask({
-                id: '',
-                title: '',
-                description: '',
-                status: 'pending',
-                priority: '-',
-                dueDate: ''
-            });
-        } else {
-            alert(formError.join(' '));
-        }
-    };
-
-    function taskEdit (e: any) {
-        e.preventDefault();
-        const formError = formGood(newTask);
-        console.log(formError);
-        if (formError[0] === "Submitted" ) {
-            onEditSubmit(newTask);
-            setNewTask({
+// actions taken when "submit" button clicked: default form behavior suppressed, form inputs validated, 
+// onSubmit function run (adds new task to tasks array), form inputs and new task states cleared (or alert for more info)
+const formSubmit = (e: any) => {
+    e.preventDefault();
+    const formError = formGood(newTask);
+    if (formError[0] === "Submitted") {
+        onSubmit(newTask);
+        setNewTask({
             id: '',
             title: '',
             description: '',
@@ -81,9 +40,28 @@ export function TaskForm({taskToEdit, onSubmit, onEditSubmit}: TaskFormProps ) {
             dueDate: ''
         });
     } else {
-        alert(Object.values(formError).join(' '));
+        alert(formError.join(' '));
     }
-    }
+};
+
+// same behavior as above, but for editing
+function taskEdit (e: any) {
+    e.preventDefault();
+    const formError = formGood(newTask);
+    if (formError[0] === "Submitted" ) {
+        onEditSubmit(newTask);
+        setNewTask({
+        id: '',
+        title: '',
+        description: '',
+        status: 'pending',
+        priority: '-',
+        dueDate: ''
+    });
+} else {
+    alert(Object.values(formError).join(' '));
+}
+}
 
   return (
     <form onSubmit={taskToEdit.id !== '' ? taskEdit : formSubmit}>

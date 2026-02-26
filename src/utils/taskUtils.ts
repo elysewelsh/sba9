@@ -1,11 +1,5 @@
-import { useState } from 'react'
+
 import type { Task } from '../types'
-// Implement task filtering logic
-
-
-
-// Add sorting functions
-
 
 
 // Create validation helpers
@@ -23,5 +17,9 @@ export function formGood (newTask: Task): string[] {
     }
     return ["Submitted"];
 }
-// Add date formatting utilities
+
+// localStorage
+export function localStore (tasks: Task[]) {
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+};
 

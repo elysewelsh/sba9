@@ -3,7 +3,7 @@ import type { DashboardProps, Task, TaskPriority, TaskStatus }from "../../types"
 import { TaskForm } from "../TaskForm/TaskForm"
 import { TaskFilter } from "../TaskFilter/TaskFilter"
 import {TaskList } from "../TaskList/Tasklist"
-import { formGood } from "../../utils/taskUtils"
+import { formGood, localStore } from "../../utils/taskUtils"
 
 export function Dashboard ( {text}: DashboardProps) {
 
@@ -145,12 +145,17 @@ export function Dashboard ( {text}: DashboardProps) {
         }
     ]
 
+
+// keeps track of current state of task list (filtered?) and retrieves from local storage as initial state
     const [tasks, setTasks] = useState<Task[]>(() => {
         const localStorageExists = localStorage.getItem('tasks');
         return localStorageExists ? JSON.parse(localStorageExists) : ogTasks;
     });
 
+// keeps track of task id to be edited
     const [editId, setEditId] = useState<string | null>(null);
+
+// keeps track of entire task being edited and any changes to properties
     const [editTask, setEditTask] = useState<Task>(
         {
         id: '',
@@ -162,26 +167,36 @@ export function Dashboard ( {text}: DashboardProps) {
         }
     );
 
+// keeps track of array sorting status
+    const [sortOrder, setSortOrder] = useState<Task[]>(tasks);
+
+// task array newest to oldest
+    let sortedNewTasks = [...tasks].sort((a, b) => new Date(b.dueDate).getTime() - new Date(a.dueDate).getTime());
+
+// task array oldest to newest
+    let sortedOldTasks = [...tasks].sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+
+// keeps track of current filter state of tasks
     const [filterState, setFilterState] = useState({
         status: "",
         priority: "",
         search: "",
     });
 
-    // const [errors, setErrors] = useState(<></>);
-
-    // let initializeForm: Task = editTask;
-
+// sets filter state
     function handleFilterChange (filters: {status?: TaskStatus, priority?: TaskPriority, search?: string}) {  
         setFilterState((prevFilterState) => {return { ...prevFilterState, ...filters };});
     };
 
-    //newest to oldest
-    const sortedNewTasks = [...tasks].sort((a, b) => new Date(b.dueDate).getTime() - new Date(a.dueDate).getTime());
+// uses filter state to compare to tasks in tasks array
+    const filteredTasks = sortOrder.filter(task => {
+        const includesStatus = filterState.status === "" || task.status.includes(filterState.status);
+        const includesPriority = filterState.priority === "" || task.priority.includes(filterState.priority);
+        const includesSearch = filterState.search === "" || (task.title.toLowerCase().includes(filterState.search.toLowerCase()) || task.description.toLowerCase().includes(filterState.search.toLowerCase()))
+        return includesStatus && includesPriority && includesSearch;
+    });
 
-    //oldest to newest
-    const sortedOldTasks = [...tasks].sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
-
+// when new task submitted with add task button
     const handleSubmit = (newTask: Task) => {
         const updatedTasks = [...tasks, newTask];
         setTasks(updatedTasks);
@@ -196,12 +211,14 @@ export function Dashboard ( {text}: DashboardProps) {
                 });
     };
 
+// when status updated on individual task with dropdown
     function handleStatusChange (taskId:string, newStatus:TaskStatus) {
         const updatedTasks = tasks.map(task => task.id === taskId ? {...task, status: newStatus } : task );
         setTasks(updatedTasks);
         localStore(updatedTasks);
     };
 
+// when "save changes" button is clicked after editing existing task
     function handleFullEdit (newTask : Task) {
         let validateForm = formGood(newTask);
         if (validateForm[0] === "Submitted") {
@@ -226,39 +243,39 @@ export function Dashboard ( {text}: DashboardProps) {
         }
     };
 
-
+// when "edit" button is clicked from inside individual task
     function handleEditRequest (taskId: string) {
         const editTask = tasks.find(task => task.id === taskId);
         if (editTask) {
             setEditId(editTask.id);
             setEditTask(editTask);
-            // initializeForm = editTask;
         };
     };
 
+// when "delete" button is clicked from within individual task
     function handleDelete(taskId: string, taskTitle: string) {
         const updatedTasks = tasks.filter(task => task.id !== taskId || task.title !== taskTitle);
         setTasks(updatedTasks);
         localStore(updatedTasks);
     };
 
-    function localStore (tasks: Task[]) {
-        localStorage.setItem('tasks', JSON.stringify(tasks));
-    };
 
-    const filteredTasks = tasks.filter(task => {
-        const includesStatus = filterState.status === "" || task.status.includes(filterState.status);
-        const includesPriority = filterState.priority === "" || task.priority.includes(filterState.priority);
-        const includesSearch = filterState.search === "" || (task.title.toLowerCase().includes(filterState.search.toLowerCase()) || task.description.toLowerCase().includes(filterState.search.toLowerCase()))
-        return includesStatus && includesPriority && includesSearch;
-    });
-
-// postDate.innerText = `post last edited: ${(new Date(array[i].date)).toLocaleDateString()}`;
-
-    return (
+return (
         <>
         <h1>{text}</h1>
         <TaskForm key={editId || "new"} taskToEdit={editTask} onSubmit={handleSubmit} onEditSubmit={handleFullEdit}/>
+        <button
+            onClick={() => setSortOrder(sortedNewTasks)}
+            className="ml-4 text-gray-500 hover:text-gray-700"
+        >
+            Sort New to Old
+        </button>
+        <button
+            onClick={() => setSortOrder(sortedOldTasks)}
+            className="ml-4 text-gray-500 hover:text-gray-700"
+        >
+            Sort Old to New
+        </button>
         <TaskFilter onFilterChange={handleFilterChange}/>
         <p>Search Results for "{filterState.search}":</p>
         <TaskList tasks={filteredTasks} onStatusChange={handleStatusChange} onEdit={handleEditRequest} onDelete={handleDelete}/>
