@@ -322,7 +322,11 @@ return (
                 </div>
                 <div>
                     <TaskFilter onFilterChange={handleFilterChange}/>
-                    <p>Search Results for "{filterState.search}":</p>
+                    <div className="flex flex-row justify-around">
+                    <p className="font-medium">Filtered by Status: {filterState.status}</p>
+                    <p className="font-medium">Filtered by Priority: {filterState.priority}</p>
+                    <p className="font-medium">Search Results for: {filterState.search}</p>
+                    </div>
                 </div>
             </div>
             <TaskList tasks={filteredTasks} onStatusChange={handleStatusChange} onEdit={handleEditRequest} onDelete={handleDelete}/>
